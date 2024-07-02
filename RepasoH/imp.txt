@@ -1,0 +1,117 @@
+CREATE TABLE usuario(
+   idUser INT AUTO_INCREMENT PRIMARY KEY,
+    nomUser varchar(10),
+    passUser varchar(10),
+    rolUser varchar(10)
+);
+
+CREATE TABLE encuesta(
+    idencuesta int AUTO_INCREMENT PRIMARY KEY,
+    pre1 varchar(10),
+    pre2 varchar(10),
+    pre3 varchar(10),
+    idUser int,
+    FOREIGN KEY (idUser) REFERENCES usuario (idUser)
+);
+
+
+---------------------------------------------------
+ Conexion cc = new Conexion();
+                Connection cn = cc.conectar();
+                String Sql = "delete from estudiantes where  estCedula='" + jtxtCedula.getText() + " ' ";
+                PreparedStatement psd = cn.prepareStatement(Sql);
+                int n = psd.executeUpdate();
+                if (n > 0) {
+                    JOptionPane.showMessageDialog(null, "Se elimino al estudiante del registro");
+                    borrarDatos();
+                    cargarTabla("");
+                }
+-------------------------------------
+ public void cargarTabla(String dato) {
+        try {
+            String titulos[] = {"Cedula", "Nombre", "Apellido", "Telefono", "Dirección", "Curso"};
+            String registros[] = new String[6];
+            modelo = new DefaultTableModel(null, titulos);
+
+            Conexion cn = new Conexion();
+            Connection cc = cn.conectar();
+            String sql = "select estudiantes.estCedula, estudiantes.estNombre, estudiantes.estApellido,estudiantes.estTelefono,estudiantes.estDireccion,estudiantes.curId, cursos.Nombre from estudiantes,cursos where estudiantes.curId=cursos.curId and estudiantes.estCedula like'%" + dato + "'";
+            Statement psd = cc.createStatement();
+            ResultSet rs = psd.executeQuery(sql);
+            while (rs.next()) {
+                registros[0] = rs.getString("estCedula");
+                registros[1] = rs.getString("estNombre");
+                registros[2] = rs.getString("estApellido");
+                registros[3] = rs.getString("estTelefono");
+                registros[4] = rs.getString("estDireccion");
+                registros[5] = rs.getString("curId") + " - " + rs.getString("Nombre");
+                modelo.addRow(registros);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+        jtblEstudiantes.setModel(modelo);
+    }
+------------------------------------------------
+Conexion cc = new Conexion();
+                            Connection cn = cc.conectar();
+                            String sql = "insert into estudiantes (estCedula,estNombre,estApellido,estTelefono,estDireccion,curId)values(?,?,?,?,?,?)";
+                            PreparedStatement psd = cn.prepareStatement(sql);
+                            psd.setString(1, this.jtxtCedula.getText());
+                            psd.setString(2, this.jtxtNombre.getText().toLowerCase());
+                            psd.setString(3, this.jtxtApellido.getText().toLowerCase());
+                            psd.setString(4, this.jtxtTelefono.getText());
+                            if (!this.jtxtDireccion.getText().isEmpty()) {
+                                psd.setString(5, this.jtxtDireccion.getText().toLowerCase());
+                            } else {
+                                psd.setString(5, "sin direccion");
+                            }
+                            psd.setString(6, this.jcmbCursos.getSelectedItem().toString().substring(0, 1));
+                            int num = psd.executeUpdate();
+                            if (num != 0) {
+                                JOptionPane.showMessageDialog(null, "Se guardo el nuevo estudiante");
+                                borrarDatos();
+
+                                cargarTabla("");
+                            }
+---------------------------------------
+public boolean verificarDatos() {
+
+                try {
+                    Conexion cc = new Conexion();
+                    Connection cn = cc.conectar();
+                    String consulta = "SELECT * FROM personal WHERE user = ? AND password = ?";
+                    PreparedStatement declaración = cn.prepareStatement(consulta);
+                    declaración.setString(1, this.jtxtUser.getText());
+                    declaración.setString(2, this.jpswPassword.getText());
+                    ResultSet resultado = declaración.executeQuery();
+
+                    if (resultado.next()) {
+                        obtenerRol(resultado);
+                        return true;
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(VisInicio.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        return false;
+
+    }
+
+    public void obtenerRol(ResultSet rs) throws SQLException {
+        this.rol = rs.getString("rol");
+
+    }
+------------------------------------------------
+  Conexion cc = new Conexion();
+                            Connection cn = cc.conectar();
+                            String sql = "update estudiantes set estNombre='" + jtxtNombre.getText()
+                                    + "',estApellido='" + jtxtApellido.getText() + "', estTelefono='"
+                                    + jtxtTelefono.getText() + "', estDireccion='" + direccion.trim() + "',"
+                                    + "curId='" + this.jcmbCursos.getSelectedItem().toString().substring(0, 1) + "'"
+                                    + "where estCedula = '" + jtxtCedula.getText() + "'";
+                            PreparedStatement psd = cn.prepareStatement(sql);
+                            int n = psd.executeUpdate();
+                            if (n > 0) {
+                                JOptionPane.showMessageDialog(null, "Se actualizo la infomacion del estudiante");
+                              
+
